@@ -1,0 +1,5 @@
+{
+    "require": {
+        "activix/nylas-php": "^1.0"
+    }
+}

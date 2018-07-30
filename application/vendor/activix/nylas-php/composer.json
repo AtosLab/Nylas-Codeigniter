@@ -1,0 +1,24 @@
+{
+    "name": "activix/nylas-php",
+    "description": "PHP wrapper for the Nylas API (Adapted for Activix).",
+    "license": "MIT",
+    "authors" : [
+        {
+          "name": "Philippe Tellier",
+          "email": "philippe@activix.ca"
+        },
+        {
+          "name": "Kartik Talwar",
+          "email": "kartik@kartikt.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nylas\\": "src/"
+        }
+    }
+}
