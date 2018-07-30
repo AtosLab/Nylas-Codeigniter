@@ -131,8 +131,119 @@ class nylas_mail extends CI_Controller {
 
 		echo json_encode('success');
 	}
+	//move to any
+	private function _updateTags($id, $add = [], $delete = [])
+    {
+    	if(!$this->session->userdata('nylas_auth_token')){
+			return;
+		}
+		$get_token = $this->session->userdata('nylas_auth_token');
+		
+		$client = new Nylas($this->app_id, $this->app_secret, $get_token);
 
-	public function move_trash($id)
+        $allLabels = $client->labels()->all();
+        $currentLabels = $client->messages()->find($id)->json()['labels'];
+        $labels = [];
+
+        foreach($allLabels as $label) {
+            if ((!empty($label->name[0]) && in_array($label->name, $add)) ||
+                (empty($label->name[0]) && in_array($label->display_name, $add))) 
+            {
+                array_push($labels, $label->id);
+            }
+        }
+        //var_dump($labels); exit;
+
+        foreach($currentLabels as $index => $label) {
+            if ((!empty($label['name']) && in_array($label['name'], $delete)) ||
+                (empty($label['name']) && in_array($label['display_name'], $delete))
+            ) {
+                continue;
+            }
+
+            array_push($labels, $label['id']);
+        }
+
+        $payload = [
+            "label_ids" => $labels
+        ];
+
+        $client->messages()->update($payload, $id);
+    }
+    private function _updateFolder($id, $folder)
+    {
+    	if(!$this->session->userdata('nylas_auth_token')){
+			return;
+		}
+		$get_token = $this->session->userdata('nylas_auth_token');
+		
+		$client = new Nylas($this->app_id, $this->app_secret, $get_token);
+
+        $allFolders = $client->folders()->all();
+        $folderId = null;
+
+        foreach($allFolders as $currentFolder) {
+            if ($currentFolder->name == $folder) {
+                $folderId = $currentFolder->id;
+                break;
+            }
+        }
+        if (!empty($folderId)) {
+            $payload = [
+                "folder_id" => $folderId
+            ];
+
+            $client->messages()->update($payload, $id);
+        }
+
+        return ["success" => false];
+    }
+
+	//move trash 
+	private function move_any_by_id($id, $from, $to)
+	{
+		if(!$this->session->userdata('nylas_auth_token')){
+			return;
+		}
+		$get_token = $this->session->userdata('nylas_auth_token');
+		
+		$client = new Nylas($this->app_id, $this->app_secret, $get_token);
+		
+		$sub_menu['account'] = $client->account();
+
+		if($sub_menu['account']->provider == 'gmail'){
+			$this->_updateTags($id, $to, $from);
+		}
+		else
+		{
+			$this->_updateFolder($id, $to);
+		}
+		
+
+		//redirect(site_url().'index.php/nylas_mail/index');
+	}
+	public function mail_to_trash_bulk()
+	{
+		$recipients = $_POST['check_list'];
+		$sub_menu = isset($_POST['sub_menu']) ? $_POST['sub_menu'] : 'inbox';
+		foreach($recipients as $item){
+			$this->move_any_by_id($item, ['inbox'], ['trash']);
+		}
+		redirect(site_url().'index.php/nylas_mail/index/'.$sub_menu);
+	}
+	
+	public function mail_to_spam_bulk()
+	{
+		$recipients = $_POST['check_list'];
+		$sub_menu = isset($_POST['sub_menu']) ? $_POST['sub_menu'] : 'inbox';
+		foreach($recipients as $item){
+			$this->move_any_by_id($item, ['inbox'], ['spam']);
+		}
+		redirect(site_url().'index.php/nylas_mail/index/'.$sub_menu);
+	}
+
+	//move inbox
+	private function move_inbox_by_id($id)
 	{
 		if(!$this->session->userdata('nylas_auth_token')){
 			return;
@@ -145,14 +256,14 @@ class nylas_mail extends CI_Controller {
 	
 		// //move msg to other folders
 		if($sub_menu['account']->provider == "yahoo")
-			$client->messages()->update(array("folder_id"=>"egefkd8zkrg325flln1jtyltr"), $id);
+			$client->messages()->update(array("folder_id"=>"c9kjtq81gihlpleqfa3mtdy6z"), $id);
 		else if($sub_menu['account']->provider == "eas")
-			$client->messages()->update(array("folder_id"=>"3oxn2cuwn4bkh31sooxn8g983"), $id);
+			$client->messages()->update(array("folder_id"=>"grhulm08ekcdhe1wr0yzfw9y"), $id);
 		else if($sub_menu['account']->provider == 'gmail')
 		{
 			$labels = [];
 	        array_push($labels, 'iduuqsdvz36zmji6ob6qe5');
-	        array_push($labels, '8qrqlt058jxpyuty3rpfxg6je');
+	        array_push($labels, 'a3htbw2ueqxjslcdn7rk3ki9w');
 	        $payload = [
 	            "label_ids" => $labels
 	        ];
@@ -160,7 +271,16 @@ class nylas_mail extends CI_Controller {
 	        $client->messages()->update($payload, $id);
 		}
 
-		redirect(site_url().'index.php/nylas_mail/index');
+		//redirect(site_url().'index.php/nylas_mail/index');
+	}
+	public function mail_to_inbox_bulk()
+	{
+		$recipients = $_POST['check_list'];
+		$sub_menu = isset($_POST['sub_menu']) ? $_POST['sub_menu'] : 'inbox';
+		foreach($recipients as $item){
+			$this->move_trash_by_id($item);
+		}
+		redirect(site_url().'index.php/nylas_mail/index/'.$sub_menu);
 	}
 
 	public function mail_new()

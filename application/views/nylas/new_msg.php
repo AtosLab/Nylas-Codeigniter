@@ -51,7 +51,7 @@
                     <!-- / CONTENT TOOLBAR -->
                     <div class="page-content custom-scrollbar">
                         <div class="thread-list w-100">
-                        	<form id="frm_new_msg" action="/action_page.php" method="post">
+                        	<form id="frm_new_msg" method="post">
 	                        	<div class="row no-gutters flex-wrap flex-sm-nowrap align-items-center py-2 px-3 py-sm-4 px-sm-6 unread">
 	                        		<div class="col-12 col-sm-auto d-flex flex-sm-column justify-content-center align-items-center" style="width: 100%;">
 										<div class="input-group">

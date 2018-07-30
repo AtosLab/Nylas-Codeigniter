@@ -44,15 +44,29 @@
                                             <i class="icon icon-refresh"></i>
                                         </button>
 
+                                        <div id="div_divider1" class="divider-vertical"></div>
+
+                                        <button id="btn_spam" type="button" class="btn btn-icon" aria-label="spam" onclick="move_to_spam()">
+                                            <i class="icon icon-alert-octagon"></i>
+                                        </button>
+
+                                        <button id="btn_delete" type="button" class="btn btn-icon" aria-label="delete" onclick="move_to_trash()">
+                                            <i class="icon icon-delete"></i>
+                                        </button>
+
+                                        <div id="div_divider2" class="divider-vertical"></div>
+
+                                        <button id="btn_move_to" type="button" class="btn btn-icon" aria-label="move to">
+                                            <i class="icon icon-folder"></i>
+                                        </button>
+
                                         <div class="divider-vertical"></div>
 
                                         <button type="button" class="btn btn-icon" aria-label="more">
                                             <i class="icon icon-dots-vertical"></i>
                                         </button>
 
-                                    </div>
-
-                                    
+                                    </div>                                    
                                 </div>
                             </div>
                         </div>
@@ -84,15 +98,17 @@
                     <!-- / CONTENT TOOLBAR -->
                     <div class="page-content custom-scrollbar">
                         <div class="thread-list w-100">
+                        <form id="frm_check" method="post">
                         <?
                         foreach ($messages as $msg) {
                             $id = $msg->id;
                             $msg = $msg->json();
                             $view_url = site_url().'index.php/nylas_mail/mail_view/'.$sub_menu['label_active'].'/'.$id;
                             ?>
+                            <input type="hidden" name="sub_menu" value="<?=$sub_menu['label_active']; ?>">
                             <div class="thread ripple row no-gutters flex-wrap flex-sm-nowrap align-items-center py-2 px-3 py-sm-4 px-sm-6 <? echo $msg['unread'] ? 'unread' : ''; ?>" onclick="location.href='<? echo $view_url ?>'" >
                                 <label class="col-auto custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input sub-checked-item" />
+                                    <input type="checkbox" class="custom-control-input sub-checked-item" name="check_list[]" value="<?= $id ?>" />
                                     <span class="custom-control-indicator"></span>
                                 </label>
 
@@ -123,6 +139,7 @@
                         <?
                         }
                         ?>
+                        </form>
                         </div>
                     </div>
 
@@ -135,13 +152,42 @@
 </div>
 <script type="text/javascript">
 
+
     $(document).ready(function() {
-          
+        showSelectedActionBtn(false);
     });
-        
+    
+    function showSelectedActionBtn(bflag, foldername = 'inbox')
+    {
+        if(bflag)
+        {
+            $("#div_divider1").css("display", "");
+            $("#div_divider2").css("display", "");
+            if(foldername == 'inbox'){
+                $("#btn_spam").css("display", "");
+                $("#btn_delete").css("display", "");
+            }
+            else if(foldername == 'spam'){
+                $("#btn_delete").css("display", "");
+            }
+            else if(foldername == 'trash'){
+                $("#btn_spam").css("display", "");
+            }
+            $("#btn_move_to").css("display", "");
+        }
+        else
+        {
+            $("#div_divider1").css("display", "none");
+            $("#div_divider2").css("display", "none");
+            $("#btn_spam").css("display", "none");
+            $("#btn_delete").css("display", "none");
+            $("#btn_move_to").css("display", "none");
+        }
+    }
     //select all checkboxes
     $("#select_all").change(function(){  //"select all" change 
         $(".sub-checked-item").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+        showSelectedActionBtn($(this).prop("checked"), '<?= $sub_menu['label_active']; ?>');
     });
 
     $('.sub-checked-item').click(function(event) {
@@ -151,6 +197,7 @@
         if ($('.sub-checked-item:checked').length == $('.sub-checked-item').length ){
             $("#select_all").prop('checked', true);
         }
+        showSelectedActionBtn($('.sub-checked-item:checked').length, '<?= $sub_menu['label_active']; ?>');
 
         if (event.stopPropagation) {    // standard
             event.stopPropagation();
@@ -164,7 +211,23 @@
         } else {    // IE6-8
             event.cancelBubble = true;
         }
-    });   
+    });  
+
+    function move_to_trash()
+    {
+        if($('.sub-checked-item:checked').length == 0)
+            return;
+        $('#frm_check').attr('action', '<? echo site_url()."index.php/nylas_mail/mail_to_trash_bulk"; ?>');
+        $("#frm_check").submit();
+    } 
+
+    function move_to_spam()
+    {
+        if($('.sub-checked-item:checked').length == 0)
+            return;
+        $('#frm_check').attr('action', '<? echo site_url()."index.php/nylas_mail/mail_to_spam_bulk"; ?>');
+        $("#frm_check").submit();
+    } 
 
 
     function set_starred(e, bflag, msg_id)

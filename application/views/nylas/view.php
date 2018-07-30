@@ -40,10 +40,6 @@
 
                                         <div class="divider-vertical"></div>
 
-                                        <button type="button" class="btn btn-icon" aria-label="archive">
-                                            <i class="icon icon-archive"></i>
-                                        </button>
-
                                         <button type="button" class="btn btn-icon" aria-label="spam">
                                             <i class="icon icon-alert-octagon"></i>
                                         </button>
@@ -53,14 +49,6 @@
                                         </button>
 
                                         <div class="divider-vertical"></div>
-
-                                        <button type="button" class="btn btn-icon" aria-label="move to">
-                                            <i class="icon icon-folder"></i>
-                                        </button>
-
-                                        <button type="button" class="btn btn-icon" aria-label="labels">
-                                            <i class="icon icon-label"></i>
-                                        </button>
 
                                         <button type="button" class="btn btn-icon" aria-label="move to">
                                             <i class="icon icon-folder"></i>
