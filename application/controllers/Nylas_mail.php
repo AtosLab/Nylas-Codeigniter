@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-use Nylas\Nylas;
+require_once APPPATH.'vendor/nylas-php/src/Nylas.php';
 
 class nylas_mail extends CI_Controller {
 
@@ -56,9 +56,7 @@ class nylas_mail extends CI_Controller {
 		else
 			$msg_where['in'] = $labels;
 
-		//var_dump($client->labels()->all()); exit;
-
-		$messages = $client->messages()->where($msg_where)->all(10);
+		$messages = $client->messages()->where($msg_where)->range($page_start, 10);
 
 		//Get Message Count 
 		$msg_where['view'] = 'count';
@@ -67,13 +65,8 @@ class nylas_mail extends CI_Controller {
 
 		$data['messages'] = $messages;
 
-		$data['page_nav'] = array('start'=>0, 'end'=>count($data['messages']), 'total'=>$count );
+		$data['page_nav'] = array('start'=>$page_start, 'end'=>$page_start + count($data['messages']), 'total'=>$count );
 		$data['sub_menu'] = $sub_menu;
-
-		// foreach ($data['messages'] as $msg) {
-		// 	var_dump($msg->json());
-		// };
-		// exit;
 
 		$this->load->view('nylas/header');
 		$this->load->view('nylas/menu_top');

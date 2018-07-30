@@ -75,14 +75,19 @@
 
                             <div class="row no-gutters align-items-center">
 
-                                <? if($page_nav['total'] > 0) { ?>
+                                <? if($page_nav['total'] > 0) {
+                                    $page_back_start = ($page_nav['start'] - 10) > 0 ? ($page_nav['start'] - 10) : 0;
+                                    $page_next_start = ($page_nav['start'] + 10) > $page_nav['total'] ? $page_nav['start'] : ($page_nav['start'] + 10);
+                                    $page_back = site_url().'index.php/nylas_mail/index/'.$sub_menu['label_active'].'/'.$page_back_start;
+                                    $page_next = site_url().'index.php/nylas_mail/index/'.$sub_menu['label_active'].'/'.$page_next_start;
+                                ?>
                                     <span class="page-info px-2 d-none d-sm-block"><? echo ($page_nav['start']+1).' - '.$page_nav['end']. ' of '.$page_nav['total']; ?></span>
 
-                                    <button type="button" class="btn btn-icon">
+                                    <button type="button" class="btn btn-icon" <? echo $page_back_start == 0 ? 'disabled="disabled"' : ''; ?> onclick="location.href='<? echo $page_back ?>'">
                                         <i class="icon icon-chevron-left"></i>
                                     </button>
 
-                                    <button type="button" class="btn btn-icon">
+                                    <button type="button" class="btn btn-icon" <? echo ($page_next_start + 10) >= $page_nav['total'] ? 'disabled="disabled"' : ''; ?> onclick="location.href='<? echo $page_next ?>'">
                                         <i class="icon icon-chevron-right"></i>
                                     </button>
 
