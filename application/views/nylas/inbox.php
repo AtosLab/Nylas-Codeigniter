@@ -29,8 +29,8 @@
                                 <div class="col-auto">
 
                                     <label class="custom-control custom-checkbox">
-                                        <input id="select_all" type="checkbox" class="custom-control-input" />
-                                        <span class="custom-control-indicator"></span>
+                                        <input id="select_all" type="checkbox" class="custom-control-input select-all" />
+                                        <span class="custom-control-indicator select-all"></span>
                                     </label>
 
                                 </div>
@@ -92,8 +92,8 @@
                             ?>
                             <div class="thread ripple row no-gutters flex-wrap flex-sm-nowrap align-items-center py-2 px-3 py-sm-4 px-sm-6 <? echo $msg['unread'] ? 'unread' : ''; ?>" onclick="location.href='<? echo $view_url ?>'" >
                                 <label class="col-auto custom-control custom-checkbox">
-                                    <input id="sub_item_check" type="checkbox" class="custom-control-input" />
-                                    <span id="sub_item_check_span" class="custom-control-indicator"></span>
+                                    <input type="checkbox" class="custom-control-input sub-checked-item" />
+                                    <span class="custom-control-indicator"></span>
                                 </label>
 
                                 <div class="info col px-4">
@@ -141,14 +141,14 @@
         
     //select all checkboxes
     $("#select_all").change(function(){  //"select all" change 
-        $(".custom-control-input").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
+        $(".sub-checked-item").prop('checked', $(this).prop("checked")); //change all ".checkbox" checked status
     });
 
-    $('#sub_item_check').click(function(event) {
+    $('.sub-checked-item').click(function(event) {
         if(false == $(this).prop("checked")){ //if this item is unchecked
             $("#select_all").prop('checked', false); //change "select all" checked status to false
         }
-        if ($('#sub_item_check:checked').length == $('#sub_item_check').length ){
+        if ($('.sub-checked-item:checked').length == $('.sub-checked-item').length ){
             $("#select_all").prop('checked', true);
         }
 
@@ -158,7 +158,7 @@
             event.cancelBubble = true;
         }
     });
-    $('#sub_item_check_span').click(function(event) {
+    $('.custom-control-indicator').click(function(event) {
         if (event.stopPropagation) {    // standard
             event.stopPropagation();
         } else {    // IE6-8
